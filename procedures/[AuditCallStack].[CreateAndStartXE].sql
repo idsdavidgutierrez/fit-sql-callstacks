@@ -23,7 +23,7 @@ BEGIN
 
 	IF @XESessionFileName IS NULL
 	BEGIN;
-		THROW 97000, N'Extended event session could not be created due to missing file name. Run the UtilityFacilIT.[dbo].[SetXEFileDirectoryConfig] stored procedure to configure the file directory.', 1;
+		THROW 97000, N'Extended event session could not be created due to missing file name. Run the [dbo].[SetXEFileDirectoryConfig] stored procedure to configure the file directory.', 1;
 	END;
 
 	SET @SQLForCreate = N'CREATE EVENT SESSION ' + QUOTENAME(@XESessionName) + N' ON SERVER 
