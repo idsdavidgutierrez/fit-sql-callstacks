@@ -9,7 +9,7 @@ IF NOT EXISTS (
 	SELECT 1
 	FROM sys.tables t
 	INNER JOIN sys.schemas sch ON t.schema_id = sch.schema_id
-	WHERE t.name = N'XEFileDirectoryConfig' AND sch.name = N'AuditCallStack'
+	WHERE t.name = N'XEFileDirectoryConfig' AND sch.name = N'dbo'
 )
 BEGIN
 	CREATE TABLE [dbo].[XEFileDirectoryConfig](

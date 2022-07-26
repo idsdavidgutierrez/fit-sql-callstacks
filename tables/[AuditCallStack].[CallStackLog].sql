@@ -19,6 +19,5 @@ BEGIN
 		[UTCDate] [date] NOT NULL,
 		INDEX CI_CallStackLog CLUSTERED (CallStackId)
 	)
-	WITH (DATA_COMPRESSION = ROW)
-	);
+	WITH (DATA_COMPRESSION = ROW);
 END;
