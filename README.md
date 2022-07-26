@@ -1,6 +1,6 @@
 # Introduction
 
-SQL Server exposes T-SQL call stacks through Extended Events. For example, consider a stored procedure that calls another stored procedure. The child stored procedure performs an insert into a table which has an `AFTER INSERT` DML trigger. The T-SQL call stack could look something like this:
+SQL Server exposes T-SQL call stacks through Extended Events. For example, consider a stored procedure that calls another stored procedure. The child stored procedure performs an insert into a table which has an `AFTER INSERT` DML trigger. The T-SQL call stack could look something like this within the trigger:
 
 ![image](https://user-images.githubusercontent.com/33984311/181058394-4dac5da0-7dea-4608-be3d-ea6b27faf9f5.png)
 
