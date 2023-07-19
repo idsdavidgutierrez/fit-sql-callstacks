@@ -132,27 +132,31 @@ BEGIN
 		BEGIN
 			-- possible permission issues on sys.all_objects are unlikely because agent jobs are usually created as sysadmin
 			SET @CurrentDatabaseName = DB_NAME(@CurrentDatabaseId);
-			-- RECOMPILE to avoid plan cache pollution due to temp tables in dynamic SQL
-			SET @SQLForCacheJoin = N'INSERT INTO #SqlHandleCachedObjectName
-			(CallingDatabaseName, [sql_handle], OffsetStart, OffsetEnd, CacheDatabaseName, CacheObjectName, CacheStatementText)
-			SELECT
-				cs.[CallingDatabaseName],		
-				cs.[sql_handle],
-				cs.OffsetStart,
-				cs.OffsetEnd,			
-				CASE WHEN so.name IS NOT NULL THEN @CurrentDatabaseName ELSE NULL END,
-				so.name,
-				cs.StatementTextFromCache
-			FROM #SqlHandleCachedObjectid cs
-			LEFT OUTER JOIN ' + QUOTENAME(@CurrentDatabaseName) + N'.sys.all_objects so ON cs.ObjectidFromCache = so.[object_id]
-			WHERE cs.DbidFromCache = @CurrentDatabaseId
-			OPTION (RECOMPILE)';
 
-			EXEC sp_executesql
-				@SQLForCacheJoin,
-				N'@CurrentDatabaseId INT, @CurrentDatabaseName SYSNAME',
-				@CurrentDatabaseId,
-				@CurrentDatabaseName;
+			IF @CurrentDatabaseName IS NOT NULL -- database may have been dropped
+			BEGIN
+				-- RECOMPILE to avoid plan cache pollution due to temp tables in dynamic SQL
+				SET @SQLForCacheJoin = N'INSERT INTO #SqlHandleCachedObjectName
+				(CallingDatabaseName, [sql_handle], OffsetStart, OffsetEnd, CacheDatabaseName, CacheObjectName, CacheStatementText)
+				SELECT
+					cs.[CallingDatabaseName],		
+					cs.[sql_handle],
+					cs.OffsetStart,
+					cs.OffsetEnd,			
+					CASE WHEN so.name IS NOT NULL THEN @CurrentDatabaseName ELSE NULL END,
+					so.name,
+					cs.StatementTextFromCache
+				FROM #SqlHandleCachedObjectid cs
+				LEFT OUTER JOIN ' + QUOTENAME(@CurrentDatabaseName) + N'.sys.all_objects so ON cs.ObjectidFromCache = so.[object_id]
+				WHERE cs.DbidFromCache = @CurrentDatabaseId
+				OPTION (RECOMPILE)';
+	
+				EXEC sp_executesql
+					@SQLForCacheJoin,
+					N'@CurrentDatabaseId INT, @CurrentDatabaseName SYSNAME',
+					@CurrentDatabaseId,
+					@CurrentDatabaseName;
+			END;
 
 			SET @PreviousDatabaseId = @CurrentDatabaseId;
 			SET @CurrentDatabaseId = NULL;
